@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contextum — one codebase, every model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0D18;
+  --bg-2:#0F1426;
+  --glass:rgba(255,255,255,0.05);
+  --glass-border:rgba(255,255,255,0.10);
+  --ink:#E7E9F5;
+  --ink-dim:#9AA1BE;
+  --cyan:#5EEAD4;
+  --violet:#A78BFA;
+  --amber:#F5A65B;
+  --grad: linear-gradient(120deg, var(--cyan), var(--violet));
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:radial-gradient(ellipse at 20% -10%, #16204a 0%, var(--bg) 55%), var(--bg);
+  color:var(--ink);
+  font-family:'Inter', sans-serif;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+.font-display{font-family:'Space Grotesk', sans-serif;}
+.font-mono{font-family:'JetBrains Mono', monospace;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+}
+
+/* ---------- nav ---------- */
+nav{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 40px;
+  background:rgba(10,13,24,0.55);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--glass-border);
+}
+.logo{font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:-0.02em; display:flex; align-items:center; gap:10px;}
+.logo-mark{width:20px; height:20px; border-radius:6px; background:var(--grad); box-shadow:0 0 18px rgba(94,234,212,0.5);}
+.nav-links{display:flex; gap:32px; font-size:0.9rem; color:var(--ink-dim);}
+.nav-links a{color:inherit; text-decoration:none; transition:color .2s;}
+.nav-links a:hover{color:var(--ink);}
+.nav-links a:focus-visible{outline:2px solid var(--cyan); outline-offset:4px; border-radius:3px;}
+@media (max-width:760px){.nav-links{display:none;}}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;
+  padding:96px 40px 60px;
+  max-width:1180px; margin:0 auto;
+  display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;
+}
+@media (max-width:900px){.hero{grid-template-columns:1fr; padding-top:56px;}}
+
+.eyebrow{
+  font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:var(--cyan);
+  letter-spacing:0.08em; display:flex; align-items:center; gap:8px; margin-bottom:22px;
+}
+.eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 10px var(--cyan); animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.35;}}
+
+h1{
+  font-family:'Space Grotesk', sans-serif; font-weight:700;
+  font-size:clamp(2.4rem, 4.6vw, 3.6rem); line-height:1.05; letter-spacing:-0.03em;
+  margin-bottom:22px;
+}
+h1 span{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;}
+.sub{color:var(--ink-dim); font-size:1.08rem; line-height:1.6; max-width:46ch; margin-bottom:34px;}
+
+.cta-row{display:flex; gap:14px; flex-wrap:wrap;}
+.btn{
+  font-family:'Inter', sans-serif; font-weight:600; font-size:0.92rem;
+  padding:13px 24px; border-radius:12px; cursor:pointer; border:1px solid transparent;
+  transition:transform .15s ease, box-shadow .2s ease; text-decoration:none; display:inline-block;
+}
+.btn:focus-visible{outline:2px solid var(--cyan); outline-offset:3px;}
+.btn-primary{background:var(--grad); color:#08101a;}
+.btn-primary:hover{transform:translateY(-2px); box-shadow:0 8px 30px rgba(94,234,212,0.25);}
+.btn-ghost{background:var(--glass); color:var(--ink); border-color:var(--glass-border); backdrop-filter:blur(10px);}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.25); transform:translateY(-2px);}
+
+/* ---------- scroll-scrubbed hero ---------- */
+.scrubscene{
+  position:relative;
+  height:400vh;
+  max-width:none; margin:0; padding:0; width:100vw;
+}
+.scrubscene canvas{
+  position:sticky; top:0; left:0; width:100vw; height:100vh; display:block;
+}
+.scrub-scrim{
+  position:sticky; top:0; height:100vh; width:100vw; margin-top:-100vh;
+  background:linear-gradient(180deg, rgba(10,13,24,0.75) 0%, rgba(10,13,24,0.35) 40%, rgba(10,13,24,0.85) 100%);
+  pointer-events:none;
+}
+.scrub-sticky-content{
+  position:sticky; top:0; height:100vh; width:100vw; margin-top:-100vh;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:0 40px; max-width:none;
+}
+.scrub-sticky-content > *{max-width:640px;}
+.scrub-sticky-content .cta-row, .scrub-sticky-content .scrub-progress{max-width:none;}
+.scrub-sticky-content .eyebrow{margin-bottom:20px;}
+.scrub-progress{
+  margin-top:44px; height:2px; width:220px; background:var(--glass-border); border-radius:2px; overflow:hidden;
+}
+.scrub-progress-bar{height:100%; width:0%; background:var(--grad);}
+@media (max-width:760px){
+  .scrubscene{height:320vh;}
+  .scrub-sticky-content{max-width:100%;}
+}
+
+/* ---------- graph signature element ---------- */
+.graph-wrap{
+  position:relative; aspect-ratio:1/1; border-radius:24px;
+  background:var(--glass); border:1px solid var(--glass-border);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+  overflow:hidden;
+}
+.graph-wrap canvas{width:100%; height:100%; display:block;}
+.graph-label{
+  position:absolute; bottom:14px; left:16px; font-family:'JetBrains Mono', monospace;
+  font-size:0.7rem; color:var(--ink-dim); background:rgba(10,13,24,0.6); padding:4px 10px; border-radius:20px;
+  border:1px solid var(--glass-border);
+}
+
+/* ---------- glass panel base ---------- */
+.panel{
+  background:var(--glass); border:1px solid var(--glass-border); border-radius:18px;
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* ---------- pipeline section ---------- */
+section{max-width:1180px; margin:0 auto; padding:70px 40px;}
+.section-head{margin-bottom:40px; max-width:56ch;}
+.section-head .eyebrow{margin-bottom:14px;}
+.section-head h2{font-family:'Space Grotesk', sans-serif; font-size:clamp(1.6rem,2.6vw,2.1rem); font-weight:600; letter-spacing:-0.02em; margin-bottom:12px;}
+.section-head p{color:var(--ink-dim); line-height:1.6;}
+
+.pipeline{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+@media (max-width:820px){.pipeline{grid-template-columns:1fr;}}
+.stage{padding:28px 24px; position:relative;}
+.stage-num{font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:var(--cyan); margin-bottom:16px; display:block;}
+.stage h3{font-family:'Space Grotesk', sans-serif; font-size:1.15rem; margin-bottom:10px; letter-spacing:-0.01em;}
+.stage p{color:var(--ink-dim); font-size:0.92rem; line-height:1.55;}
+.stage-connector{
+  position:absolute; top:50%; right:-20px; width:20px; height:1px;
+  background:linear-gradient(90deg, var(--glass-border), transparent);
+}
+@media (max-width:820px){.stage-connector{display:none;}}
+
+/* ---------- benchmark strip ---------- */
+.bench-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+@media (max-width:820px){.bench-grid{grid-template-columns:1fr;}}
+.bench-card{padding:26px; text-align:left;}
+.bench-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+.bench-name{font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:1.02rem;}
+.bench-dot{width:9px; height:9px; border-radius:50%;}
+.dot-a{background:var(--cyan);} .dot-b{background:var(--violet);} .dot-c{background:var(--amber);}
+.metric-row{display:flex; justify-content:space-between; font-size:0.84rem; padding:8px 0; border-top:1px solid var(--glass-border); color:var(--ink-dim);}
+.metric-row span:last-child{color:var(--ink); font-family:'JetBrains Mono', monospace;}
+
+/* ---------- code preview signature 2 ---------- */
+.codebox{padding:0; overflow:hidden;}
+.codebox-head{display:flex; align-items:center; gap:8px; padding:14px 18px; border-bottom:1px solid var(--glass-border);}
+.dot{width:10px; height:10px; border-radius:50%;}
+.d1{background:#F5A65B;} .d2{background:#F5D65B;} .d3{background:#5EEAD4;}
+.codebox-title{margin-left:8px; font-family:'JetBrains Mono', monospace; font-size:0.76rem; color:var(--ink-dim);}
+.codebox pre{padding:22px; font-family:'JetBrains Mono', monospace; font-size:0.83rem; line-height:1.7; overflow-x:auto; color:var(--ink-dim);}
+.codebox pre .k{color:var(--violet);} .codebox pre .s{color:var(--cyan);} .codebox pre .c{color:#5C6390;}
+
+footer{
+  border-top:1px solid var(--glass-border); padding:40px; text-align:center;
+  color:var(--ink-dim); font-size:0.85rem;
+}
+
+.reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
+.reveal.in{opacity:1; transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><span class="logo-mark"></span>contextum</div>
+  <div class="nav-links">
+    <a href="#pipeline">Pipeline</a>
+    <a href="#benchmark">Benchmark</a>
+    <a href="#security">Security</a>
+    <a href="#api">API</a>
+  </div>
+  <a href="#" class="btn btn-ghost" style="padding:9px 18px; font-size:0.85rem;">Sign in</a>
+</nav>
+
+<section class="scrubscene" id="scrubscene">
+  <canvas id="scrubcanvas"></canvas>
+  <div class="scrub-scrim"></div>
+  <div class="scrub-sticky-content">
+    <div class="eyebrow">LIVE INDEX · 3 MODELS CONNECTED</div>
+    <h1 id="scrubHeadline">One codebase.<br><span>Every model</span> speaks it fluently.</h1>
+    <p class="sub" id="scrubSub">Contextum parses, embeds, and graphs your repository once — then hands every AI assistant the exact slice of context it needs, nothing more.</p>
+    <div class="cta-row">
+      <a href="#pipeline" class="btn btn-primary">See the pipeline</a>
+      <a href="#benchmark" class="btn btn-ghost">Compare models</a>
+    </div>
+    <div class="scrub-progress"><div class="scrub-progress-bar" id="scrubBar"></div></div>
+  </div>
+</section>
+
+<section id="pipeline">
+  <div class="section-head reveal">
+    <div class="eyebrow">THE PIPELINE</div>
+    <h2>Three stages, one commit at a time</h2>
+    <p>Every push runs the same sequence — only the changed files move.</p>
+  </div>
+  <div class="pipeline">
+    <div class="panel stage reveal">
+      <span class="stage-num">01 · INDEX</span>
+      <h3>Parse the structure</h3>
+      <p>Tree-sitter walks every file, extracting functions, classes, imports, and the edges between them.</p>
+      <div class="stage-connector"></div>
+    </div>
+    <div class="panel stage reveal">
+      <span class="stage-num">02 · EMBED</span>
+      <h3>Chunk and vectorize</h3>
+      <p>Symbols are chunked at the right granularity and embedded into a searchable vector space.</p>
+      <div class="stage-connector"></div>
+    </div>
+    <div class="panel stage reveal">
+      <span class="stage-num">03 · SERVE</span>
+      <h3>Select what matters</h3>
+      <p>Each query pulls only the minimal, task-relevant context — trimming tokens before they reach a model.</p>
+    </div>
+  </div>
+</section>
+
+<section id="benchmark">
+  <div class="section-head reveal">
+    <div class="eyebrow">MULTI-AI BENCHMARK</div>
+    <h2>Same prompt, same context, three answers</h2>
+    <p>Watch cost, speed, and accuracy side by side before you decide which model earns the task.</p>
+  </div>
+  <div class="bench-grid">
+    <div class="panel bench-card reveal">
+      <div class="bench-top"><span class="bench-name">GPT</span><span class="bench-dot dot-a"></span></div>
+      <div class="metric-row"><span>Response time</span><span>2.4s</span></div>
+      <div class="metric-row"><span>Tokens used</span><span>3,120</span></div>
+      <div class="metric-row"><span>Est. cost</span><span>$0.019</span></div>
+    </div>
+    <div class="panel bench-card reveal">
+      <div class="bench-top"><span class="bench-name">Claude</span><span class="bench-dot dot-b"></span></div>
+      <div class="metric-row"><span>Response time</span><span>1.9s</span></div>
+      <div class="metric-row"><span>Tokens used</span><span>2,865</span></div>
+      <div class="metric-row"><span>Est. cost</span><span>$0.017</span></div>
+    </div>
+    <div class="panel bench-card reveal">
+      <div class="bench-top"><span class="bench-name">Gemini</span><span class="bench-dot dot-c"></span></div>
+      <div class="metric-row"><span>Response time</span><span>2.1s</span></div>
+      <div class="metric-row"><span>Tokens used</span><span>2,990</span></div>
+      <div class="metric-row"><span>Est. cost</span><span>$0.014</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="security">
+  <div class="section-head reveal">
+    <div class="eyebrow">SECURITY SCAN</div>
+    <h2>Findings, ranked by what actually matters</h2>
+    <p>Secrets, injection risks, and vulnerable dependencies — surfaced before they ship.</p>
+  </div>
+  <div class="panel codebox reveal">
+    <div class="codebox-head">
+      <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+      <span class="codebox-title">findings · auth/session.py</span>
+    </div>
+    <pre><span class="c"># HIGH — hardcoded credential detected, line 42</span>
+<span class="k">SECRET_KEY</span> = <span class="s">"sk_live_4f9a..."</span>  <span class="c">→ move to environment variable</span>
+
+<span class="c"># MEDIUM — raw SQL string concatenation, line 88</span>
+<span class="k">query</span> = <span class="s">f"SELECT * FROM users WHERE id={user_id}"</span>  <span class="c">→ use parameterized query</span></pre>
+  </div>
+</section>
+
+<footer>
+  Contextum — built for teams running more than one model against the same codebase.
+</footer>
+
+<script>
+// ---- scroll-scrubbed frame sequence (plays like a video as you scroll) ----
+const FRAME_COUNT = 85;
+const framePath = i => `frames/frame_${String(i).padStart(3,'0')}.jpg`;
+
+const scrubCanvas = document.getElementById('scrubcanvas');
+const sctx = scrubCanvas.getContext('2d');
+const scene = document.getElementById('scrubscene');
+const bar = document.getElementById('scrubBar');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const images = new Array(FRAME_COUNT);
+let loadedCount = 0;
+for(let i=1;i<=FRAME_COUNT;i++){
+  const img = new Image();
+  img.src = framePath(i);
+  img.onload = ()=>{ loadedCount++; if(i===1) drawFrame(1); };
+  images[i-1] = img;
+}
+
+function resizeCanvas(){
+  scrubCanvas.width = window.innerWidth * devicePixelRatio;
+  scrubCanvas.height = window.innerHeight * devicePixelRatio;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function drawFrame(index){
+  const img = images[Math.min(Math.max(index,1),FRAME_COUNT)-1];
+  if(!img || !img.complete || img.naturalWidth===0) return;
+  const cw = scrubCanvas.width, ch = scrubCanvas.height;
+  const ir = img.width/img.height, cr = cw/ch;
+  let dw, dh, dx, dy;
+  if(ir > cr){ dh = ch; dw = ch*ir; dx = (cw-dw)/2; dy = 0; }
+  else{ dw = cw; dh = cw/ir; dx = 0; dy = (ch-dh)/2; }
+  sctx.clearRect(0,0,cw,ch);
+  sctx.drawImage(img, dx, dy, dw, dh);
+}
+
+let ticking = false;
+function onScroll(){
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{
+    const rect = scene.getBoundingClientRect();
+    const total = scene.offsetHeight - window.innerHeight;
+    const scrolled = Math.min(Math.max(-rect.top, 0), total);
+    const progress = total > 0 ? scrolled/total : 0;
+    const frameIndex = reducedMotion ? 1 : Math.round(1 + progress*(FRAME_COUNT-1));
+    drawFrame(frameIndex);
+    bar.style.width = (progress*100).toFixed(1) + '%';
+    ticking = false;
+  });
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+// scroll reveal
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+}, {threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
