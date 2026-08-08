@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — Contextum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0D18;
+  --glass:rgba(255,255,255,0.05);
+  --glass-strong:rgba(255,255,255,0.07);
+  --glass-border:rgba(255,255,255,0.10);
+  --ink:#E7E9F5;
+  --ink-dim:#9AA1BE;
+  --cyan:#5EEAD4;
+  --violet:#A78BFA;
+  --danger:#F5A65B;
+  --grad: linear-gradient(120deg, var(--cyan), var(--violet));
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  min-height:100vh;
+  background:radial-gradient(ellipse at 20% -10%, #16204a 0%, var(--bg) 55%), var(--bg);
+  color:var(--ink);
+  font-family:'Inter', sans-serif;
+  display:flex;
+  overflow-x:hidden;
+}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;} }
+
+/* ---- left: ambient graph panel ---- */
+.side{
+  flex:1;
+  position:relative;
+  display:flex; align-items:flex-end;
+  padding:48px;
+  border-right:1px solid var(--glass-border);
+  overflow:hidden;
+}
+.side canvas{position:absolute; inset:0; width:100%; height:100%;}
+.side-content{position:relative; z-index:2; max-width:420px;}
+.side .logo{font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:1.1rem; display:flex; align-items:center; gap:10px; position:absolute; top:40px; left:48px; z-index:2;}
+.logo-mark{width:20px; height:20px; border-radius:6px; background:var(--grad); box-shadow:0 0 18px rgba(94,234,212,0.5);}
+.side-quote{font-family:'Space Grotesk', sans-serif; font-size:1.4rem; line-height:1.4; letter-spacing:-0.01em; margin-bottom:16px;}
+.side-quote span{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;}
+.side-sub{color:var(--ink-dim); font-size:0.92rem; line-height:1.6;}
+@media (max-width:900px){.side{display:none;}}
+
+/* ---- right: form panel ---- */
+.formside{
+  flex:1;
+  display:flex; align-items:center; justify-content:center;
+  padding:40px;
+  position:relative;
+}
+@media (min-width:901px){.formside{max-width:560px;}}
+
+.card{
+  width:100%; max-width:400px;
+  background:var(--glass); border:1px solid var(--glass-border); border-radius:20px;
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+  padding:38px 34px;
+}
+.eyebrow{
+  font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:var(--cyan);
+  letter-spacing:0.08em; margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+.eyebrow::before{content:''; width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan);}
+h1{
+  font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:1.7rem;
+  letter-spacing:-0.02em; margin-bottom:8px;
+}
+.card-sub{color:var(--ink-dim); font-size:0.9rem; margin-bottom:30px;}
+
+.tabbar{
+  display:flex; background:rgba(0,0,0,0.2); border:1px solid var(--glass-border);
+  border-radius:12px; padding:4px; margin-bottom:26px;
+}
+.tabbar button{
+  flex:1; padding:9px 0; background:transparent; border:none; border-radius:9px;
+  color:var(--ink-dim); font-family:'Inter', sans-serif; font-weight:600; font-size:0.85rem;
+  cursor:pointer; transition:all .2s ease;
+}
+.tabbar button.active{background:var(--grad); color:#08101a;}
+.tabbar button:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+
+.field{margin-bottom:18px;}
+.field label{
+  display:block; font-size:0.8rem; color:var(--ink-dim); margin-bottom:7px; font-family:'JetBrains Mono', monospace;
+}
+.input-wrap{position:relative;}
+.input-wrap input{
+  width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--glass-border);
+  background:rgba(0,0,0,0.22); color:var(--ink); font-family:'Inter', sans-serif; font-size:0.92rem;
+  outline:none; transition:border-color .2s ease, box-shadow .2s ease;
+}
+.input-wrap input::placeholder{color:#565C7E;}
+.input-wrap input:focus{border-color:var(--cyan); box-shadow:0 0 0 3px rgba(94,234,212,0.12);}
+.toggle-vis{
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  background:none; border:none; color:var(--ink-dim); cursor:pointer; font-size:0.78rem;
+  font-family:'JetBrains Mono', monospace;
+}
+.toggle-vis:focus-visible{outline:2px solid var(--cyan); border-radius:4px;}
+
+.row-between{display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; font-size:0.83rem;}
+.check{display:flex; align-items:center; gap:8px; color:var(--ink-dim);}
+.check input{accent-color:var(--cyan); width:14px; height:14px;}
+.link{color:var(--cyan); text-decoration:none;}
+.link:hover{text-decoration:underline;}
+.link:focus-visible{outline:2px solid var(--cyan); outline-offset:2px; border-radius:3px;}
+
+.btn-submit{
+  width:100%; padding:13px 0; border-radius:12px; border:none; cursor:pointer;
+  background:var(--grad); color:#08101a; font-family:'Inter', sans-serif; font-weight:700; font-size:0.94rem;
+  transition:transform .15s ease, box-shadow .2s ease;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-submit:hover{transform:translateY(-2px); box-shadow:0 8px 30px rgba(94,234,212,0.25);}
+.btn-submit:focus-visible{outline:2px solid var(--cyan); outline-offset:3px;}
+.btn-submit:disabled{opacity:0.6; cursor:not-allowed; transform:none; box-shadow:none;}
+.spinner{
+  width:14px; height:14px; border-radius:50%; border:2px solid rgba(8,16,26,0.3); border-top-color:#08101a;
+  animation:spin .7s linear infinite; display:none;
+}
+.btn-submit.loading .spinner{display:inline-block;}
+.btn-submit.loading .btn-label{display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.divider{display:flex; align-items:center; gap:14px; margin:26px 0; color:var(--ink-dim); font-size:0.78rem; font-family:'JetBrains Mono', monospace;}
+.divider::before, .divider::after{content:''; flex:1; height:1px; background:var(--glass-border);}
+
+.oauth-row{display:flex; gap:12px;}
+.oauth-btn{
+  flex:1; padding:11px 0; border-radius:10px; border:1px solid var(--glass-border);
+  background:var(--glass-strong); color:var(--ink); font-family:'Inter', sans-serif; font-weight:600; font-size:0.85rem;
+  cursor:pointer; transition:border-color .2s, transform .15s ease; display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.oauth-btn:hover{border-color:rgba(255,255,255,0.28); transform:translateY(-1px);}
+.oauth-btn:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+
+.apikey-note{
+  margin-top:26px; padding:14px 16px; border-radius:12px; background:rgba(94,234,212,0.06);
+  border:1px solid rgba(94,234,212,0.18); font-size:0.8rem; color:var(--ink-dim); line-height:1.55;
+}
+.apikey-note code{font-family:'JetBrains Mono', monospace; color:var(--cyan); font-size:0.78rem;}
+
+.error-box{
+  display:none; margin-bottom:18px; padding:11px 14px; border-radius:10px;
+  background:rgba(245,166,91,0.08); border:1px solid rgba(245,166,91,0.3);
+  color:var(--danger); font-size:0.82rem;
+}
+.error-box.show{display:block;}
+
+.foot-link{text-align:center; margin-top:24px; font-size:0.85rem; color:var(--ink-dim);}
+
+.fade-in{animation:fadeIn .5s ease both;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<div class="side">
+  <a href="index.html" class="logo"><span class="logo-mark"></span>contextum</a>
+  <canvas id="graph"></canvas>
+  <div class="side-content">
+    <div class="side-quote">Your codebase, <span>indexed once</span> — understood by every model you point at it.</div>
+    <div class="side-sub">Symbol graphs, semantic search, and change-impact prediction, all behind one API key.</div>
+  </div>
+</div>
+
+<div class="formside">
+  <div class="card fade-in" id="card">
+    <div class="eyebrow">SECURE ACCESS</div>
+    <h1 id="cardTitle">Welcome back</h1>
+    <p class="card-sub" id="cardSub">Sign in to reach your indexed repositories.</p>
+
+    <div class="tabbar" role="tablist" aria-label="Authentication method">
+      <button type="button" class="active" id="tabPassword" role="tab" aria-selected="true">Email &amp; password</button>
+      <button type="button" id="tabApiKey" role="tab" aria-selected="false">API key</button>
+    </div>
+
+    <div class="error-box" id="errorBox">Check your credentials and try again.</div>
+
+    <!-- password form -->
+    <form id="passwordForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <div class="input-wrap">
+          <input type="email" id="email" placeholder="you@company.com" required autocomplete="email">
+        </div>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <input type="password" id="password" placeholder="••••••••••" required autocomplete="current-password">
+          <button type="button" class="toggle-vis" id="toggleVis">SHOW</button>
+        </div>
+      </div>
+      <div class="row-between">
+        <label class="check"><input type="checkbox" checked> Keep me signed in</label>
+        <a href="#" class="link">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span class="btn-label">Sign in</span>
+        <span class="spinner"></span>
+      </button>
+    </form>
+
+    <!-- api key form -->
+    <form id="apiKeyForm" style="display:none;">
+      <div class="field">
+        <label for="apikey">API key</label>
+        <div class="input-wrap">
+          <input type="password" id="apikey" placeholder="ctxm_live_••••••••••••••••" required autocomplete="off">
+          <button type="button" class="toggle-vis" id="toggleVisKey">SHOW</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtnKey">
+        <span class="btn-label">Authenticate</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="apikey-note">Programmatic and IDE-plugin access. Generate a key from <code>Settings → API keys</code> once signed in.</div>
+    </form>
+
+    <div class="divider" id="oauthDivider">or continue with</div>
+    <div class="oauth-row" id="oauthRow">
+      <button type="button" class="oauth-btn">GitHub</button>
+      <button type="button" class="oauth-btn">Google</button>
+    </div>
+
+    <div class="foot-link">New to Contextum? <a href="#" class="link">Create an account</a></div>
+  </div>
+</div>
+
+<script>
+/* ambient graph, matches landing page signature element */
+const canvas = document.getElementById('graph');
+const ctx = canvas.getContext('2d');
+let w, h, nodes = [];
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function resize(){
+  const rect = canvas.parentElement.getBoundingClientRect();
+  w = canvas.width = rect.width * devicePixelRatio;
+  h = canvas.height = rect.height * devicePixelRatio;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const N = 26;
+for(let i=0;i<N;i++){
+  nodes.push({x:Math.random(), y:Math.random(), vx:(Math.random()-0.5)*0.0003, vy:(Math.random()-0.5)*0.0003, r:1.2+Math.random()*1.6, phase:Math.random()*Math.PI*2});
+}
+function step(t){
+  ctx.clearRect(0,0,w,h);
+  nodes.forEach(n=>{
+    if(!reduced){ n.x+=n.vx; n.y+=n.vy; }
+    if(n.x<0||n.x>1) n.vx*=-1;
+    if(n.y<0||n.y>1) n.vy*=-1;
+  });
+  for(let i=0;i<N;i++){
+    for(let j=i+1;j<N;j++){
+      const a=nodes[i], b=nodes[j];
+      const dx=(a.x-b.x)*w, dy=(a.y-b.y)*h, dist=Math.sqrt(dx*dx+dy*dy), maxD=w*0.2;
+      if(dist<maxD){
+        ctx.strokeStyle=`rgba(167,139,250,${(1-dist/maxD)*0.14})`;
+        ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(a.x*w,a.y*h); ctx.lineTo(b.x*w,b.y*h); ctx.stroke();
+      }
+    }
+  }
+  nodes.forEach(n=>{
+    const pulse = reduced ? 1 : 0.6+Math.sin(t/800+n.phase)*0.4;
+    ctx.beginPath(); ctx.arc(n.x*w, n.y*h, n.r*devicePixelRatio, 0, Math.PI*2);
+    ctx.fillStyle=`rgba(94,234,212,${0.45*pulse})`;
+    ctx.shadowColor='rgba(94,234,212,0.8)'; ctx.shadowBlur=5*pulse;
+    ctx.fill();
+  });
+  ctx.shadowBlur=0;
+  requestAnimationFrame(step);
+}
+requestAnimationFrame(step);
+
+/* tab switching */
+const tabPassword = document.getElementById('tabPassword');
+const tabApiKey = document.getElementById('tabApiKey');
+const passwordForm = document.getElementById('passwordForm');
+const apiKeyForm = document.getElementById('apiKeyForm');
+const oauthDivider = document.getElementById('oauthDivider');
+const oauthRow = document.getElementById('oauthRow');
+const cardTitle = document.getElementById('cardTitle');
+const cardSub = document.getElementById('cardSub');
+const errorBox = document.getElementById('errorBox');
+
+function showPassword(){
+  tabPassword.classList.add('active'); tabPassword.setAttribute('aria-selected','true');
+  tabApiKey.classList.remove('active'); tabApiKey.setAttribute('aria-selected','false');
+  passwordForm.style.display='block'; apiKeyForm.style.display='none';
+  oauthDivider.style.display='flex'; oauthRow.style.display='flex';
+  cardTitle.textContent='Welcome back';
+  cardSub.textContent='Sign in to reach your indexed repositories.';
+  errorBox.classList.remove('show');
+}
+function showApiKey(){
+  tabApiKey.classList.add('active'); tabApiKey.setAttribute('aria-selected','true');
+  tabPassword.classList.remove('active'); tabPassword.setAttribute('aria-selected','false');
+  apiKeyForm.style.display='block'; passwordForm.style.display='none';
+  oauthDivider.style.display='none'; oauthRow.style.display='none';
+  cardTitle.textContent='Programmatic access';
+  cardSub.textContent='Authenticate with a key from your IDE plugin or CI pipeline.';
+  errorBox.classList.remove('show');
+}
+tabPassword.addEventListener('click', showPassword);
+tabApiKey.addEventListener('click', showApiKey);
+
+/* show/hide password */
+function wireToggle(btnId, inputId){
+  const btn = document.getElementById(btnId), input = document.getElementById(inputId);
+  btn.addEventListener('click', ()=>{
+    const isPw = input.type === 'password';
+    input.type = isPw ? 'text' : 'password';
+    btn.textContent = isPw ? 'HIDE' : 'SHOW';
+  });
+}
+wireToggle('toggleVis','password');
+wireToggle('toggleVisKey','apikey');
+
+/* fake submit affordance — wire to POST /auth/login and /auth/apikey once backend exists */
+function wireSubmit(formId, btnId){
+  document.getElementById(formId).addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const btn = document.getElementById(btnId);
+    btn.classList.add('loading');
+    btn.disabled = true;
+    setTimeout(()=>{
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }, 900);
+  });
+}
+wireSubmit('passwordForm','submitBtn');
+wireSubmit('apiKeyForm','submitBtnKey');
+</script>
+</body>
+</html>
